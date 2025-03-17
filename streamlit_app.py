@@ -94,7 +94,11 @@ def main():
                vacuolisation_damage_basal_layer, spongiosis, saw_tooth_appearance_retes, follicular_horn_plug, perifollicular_parakeratosis,
 
                inflammatory_mononuclear_infiltrate, band_like_infiltrate, age]
-  
+
+model_filename = 'trained_model.pkl'
+model = load_model(model_filename)
+prediction = predict_with_model(model, user_input)
+st.write('The Prediction output is : ', prediction)
 
 
 if __name__ == "__main__":
