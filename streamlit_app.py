@@ -82,6 +82,8 @@ def main():
 
   age = st.slider('age', min_value = 0, max_value = 75, value = 40)
 
+  haha = st.selectbox('Gender', ('Male', 'Female'))
+
   user_input = [erythema, scaling, definite_borders, itching, koebner_phenomenon, polygonal_papules, follicular_papules, oral_mucosal_involvement,
                 knee_and_elbow_involvement, scalp_involvement, family_history, melanin_incontinence, eosinophils_infiltrate, PNL_infiltrate, 
                 fibrosis_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, parakeratosis, clubbing_rete_ridges, elongation_rete_ridges,\
