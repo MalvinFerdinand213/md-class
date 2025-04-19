@@ -1,100 +1,65 @@
 import streamlit as st
 import joblib
+import numpy as np
 
-def load_model(filename):
-  model = joblib.load(filename)
-  return model
+# Load model
+model = joblib.load('model.pkl')
 
-def predict_with_model(model, user_input):
-  prediction = model.predict([user_input])
-  return prediction[0]
+st.title("Prediksi Pembatalan Booking Hotel")
 
-def main():
-  st.title('Dermatology Machine Learning')
-  st.info('This app using machine learning')
-  
-  # input data by user
-  erythema = st.slider('Erythema', min_value = 0, max_value = 3, value = 2)
+# Input dari user
+no_of_adults = st.number_input("Jumlah Dewasa", min_value=0, value=2)
+no_of_children = st.number_input("Jumlah Anak", min_value=0, value=0)
+no_of_weekend_nights = st.number_input("Jumlah Malam Akhir Pekan", min_value=0)
+no_of_week_nights = st.number_input("Jumlah Malam Hari Kerja", min_value=0)
+type_of_meal_plan = st.selectbox("Paket Makanan", ['Meal Plan 1', 'Meal Plan 2', 'Meal Plan 3', 'Not Selected'])
+required_car_parking_space = st.selectbox("Perlu Parkir Mobil?", [0, 1])
+room_type_reserved = st.selectbox("Tipe Kamar", ['Room_Type 1', 'Room_Type 2', 'Room_Type 3', 'Room_Type 4'])
+lead_time = st.number_input("Lead Time (hari sebelum check-in)", min_value=0)
+arrival_year = st.selectbox("Tahun Kedatangan", [2017, 2018])
+arrival_month = st.selectbox("Bulan Kedatangan", list(range(1, 13)))
+arrival_date = st.selectbox("Tanggal Kedatangan", list(range(1, 32)))
+market_segment_type = st.selectbox("Segment Pasar", ['Offline', 'Online', 'Corporate', 'Complementary', 'Aviation'])
+repeated_guest = st.selectbox("Tamu Berulang?", [0, 1])
+no_of_previous_cancellations = st.number_input("Jumlah Pembatalan Sebelumnya", min_value=0)
+no_of_previous_bookings_not_canceled = st.number_input("Jumlah Booking Lalu Tidak Dibatalkan", min_value=0)
+avg_price_per_room = st.number_input("Harga Rata-rata per Kamar", min_value=0.0)
+no_of_special_requests = st.number_input("Jumlah Permintaan Khusus", min_value=0)
 
-  scaling = st.slider('Scaling', min_value = 0, max_value = 3, value = 2)
+# Encoding manual (harus sesuai saat training model)
+meal_plan_encoded = {
+    'Not Selected': 0,
+    'Meal Plan 1': 1,
+    'Meal Plan 2': 2,
+    'Meal Plan 3': 3
+}[type_of_meal_plan]
 
-  definite_borders = st.slider('Definite Borders', min_value = 0, max_value = 3, value = 2)
+room_type_encoded = {
+    'Room_Type 1': 1,
+    'Room_Type 2': 2,
+    'Room_Type 3': 3,
+    'Room_Type 4': 4
+}[room_type_reserved]
 
-  itching = st.slider('Itching', min_value = 0, max_value = 3, value = 0)
+market_segment_encoded = {
+    'Offline': 0,
+    'Online': 1,
+    'Corporate': 2,
+    'Complementary': 3,
+    'Aviation': 4
+}[market_segment_type]
 
-  koebner_phenomenon = st.slider('koebner_phenomenon', min_value = 0, max_value = 3, value = 0)
+# Susun fitur ke dalam array
+user_input = np.array([[no_of_adults, no_of_children, no_of_weekend_nights, no_of_week_nights,
+                        meal_plan_encoded, required_car_parking_space, room_type_encoded, lead_time,
+                        arrival_year, arrival_month, arrival_date, market_segment_encoded, repeated_guest,
+                        no_of_previous_cancellations, no_of_previous_bookings_not_canceled,
+                        avg_price_per_room, no_of_special_requests]])
 
-  polygonal_papules = st.slider('Polygonal Papules', min_value = 0, max_value = 3, value = 0)
-
-  follicular_papules = st.slider('Follicular Papules', min_value = 0, max_value = 3, value = 0)
-
-  oral_mucosal_involvement = st.slider('Oral Mucosal Involvement', min_value = 0, max_value = 3, value = 0)
-
-  knee_and_elbow_involvement = st.slider('Knee and Elbow Involvement', min_value = 0, max_value = 3, value = 0)
-
-  scalp_involvement = st.slider('Scalp Involvement', min_value = 0, max_value = 3, value = 0)
-
-  family_history = st.slider('Family History', min_value = 0, max_value = 1, value = 0)
-
-  melanin_incontinence = st.slider('Melanin Incontinence', min_value = 0, max_value = 3, value = 0)
-
-  eosinophils_infiltrate = st.slider('Eosinophils Infiltrate', min_value = 0, max_value = 2, value = 0)
-
-  PNL_infiltrate = st.slider('PNL Infiltrate', min_value = 0, max_value = 3, value = 0)
-
-  fibrosis_papillary_dermis = st.slider('Fibrosis Papillary Dermis', min_value = 0, max_value = 3, value = 0)
-
-  exocytosis = st.slider('Exocytosis', min_value = 0, max_value = 3, value = 2)
-
-  acanthosis = st.slider('Acanthosis', min_value = 0, max_value = 3, value = 2)
-
-  hyperkeratosis = st.slider('Hyperkeratosis', min_value = 0, max_value = 3, value = 0)
-
-  parakeratosis = st.slider('Parakeratosis', min_value = 0, max_value = 3, value = 2)
-
-  clubbing_rete_ridges = st.slider('Clubbing Rete Ridges', min_value = 0, max_value = 3, value = 0)
-
-  elongation_rete_ridges = st.slider('Elongation Rete Ridges', min_value = 0, max_value = 3, value = 0)
-
-  thinning_suprapapillary_epidermis = st.slider('Thinning Suprapapillary Epidermis', min_value = 0, max_value = 3, value = 0)
-
-  spongiform_pustule = st.slider('Spongiform Pustule', min_value = 0, max_value = 3, value = 0)
-
-  munro_microabcess = st.slider('Munro Microabcess', min_value = 0, max_value = 3, value = 0)
-
-  focal_hypergranulosis = st.slider('Focal Hypergranulosis', min_value = 0, max_value = 3, value = 0)
-
-  disappearance_granular_layer = st.slider('disappearance_granular_layer', min_value = 0, max_value = 3, value = 0)
-
-  vacuolisation_damage_basal_layer = st.slider('vacuolisation damage basal layer', min_value = 0, max_value = 3, value = 0)
-
-  spongiosis = st.slider('Spongiosis', min_value = 0, max_value = 3, value = 0)
-
-  saw_tooth_appearance_retes = st.slider('saw tooth appearance retes', min_value = 0, max_value = 3, value = 0)
-
-  follicular_horn_plug = st.slider('follicular horn plug', min_value = 0, max_value = 3, value = 0)
-
-  perifollicular_parakeratosis = st.slider('perifollicular parakeratosis', min_value = 0, max_value = 3, value = 0)
-
-  inflammatory_mononuclear_infiltrate = st.slider('inflammatory mononuclear infiltrate', min_value = 0, max_value = 3, value = 2)
-
-  band_like_infiltrate = st.slider('band like infiltrate', min_value = 0, max_value = 3, value = 0)
-
-  age = st.slider('age', min_value = 0, max_value = 75, value = 40)
-
-  haha = st.selectbox('Gender', ('Male', 'Female'))
-
-  user_input = [erythema, scaling, definite_borders, itching, koebner_phenomenon, polygonal_papules, follicular_papules, oral_mucosal_involvement,
-                knee_and_elbow_involvement, scalp_involvement, family_history, melanin_incontinence, eosinophils_infiltrate, PNL_infiltrate, 
-                fibrosis_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, parakeratosis, clubbing_rete_ridges, elongation_rete_ridges,\
-                thinning_suprapapillary_epidermis, spongiform_pustule, munro_microabcess, focal_hypergranulosis, disappearance_granular_layer,
-                vacuolisation_damage_basal_layer, spongiosis, saw_tooth_appearance_retes, follicular_horn_plug, perifollicular_parakeratosis,\
-                inflammatory_mononuclear_infiltrate, band_like_infiltrate, age]
-
-  model_filename = 'trained_model.pkl'
-  model = load_model(model_filename)
-  prediction = predict_with_model(model, user_input)
-  st.write('The prediction output is: ', prediction)
-
-if __name__ == "__main__":
-  main()
+# Prediksi
+if st.button("Prediksi"):
+    prediction = model.predict(user_input)
+    if prediction[0] == 1:
+        st.error("Booking kemungkinan DIBATALKAN")
+    else:
+        st.success("Booking kemungkinan TIDAK DIBATALKAN")
